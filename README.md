@@ -22,10 +22,10 @@ this package and integration.
 ## Install
 
 ```bash
-pip install wp9529
+pip install wp9529-printer
 ```
 
-This installs the `wp9529` package and the `wp9529-label` command. To work on the code
+This installs the `wp9529` module (`import wp9529`) and the `wp9529-label` command. To work on the code
 instead, clone this repository and install it editable in a virtual
 environment:
 
@@ -270,14 +270,14 @@ instead.
 
 ### Releasing
 
-Releases go to [PyPI](https://pypi.org/project/wp9529/) through the
+Releases go to [PyPI](https://pypi.org/project/wp9529-printer/) through the
 [Publish workflow](.github/workflows/publish.yml), with trusted publishing (no
 API tokens):
 
 1. Bump `version` in `pyproject.toml` and push.
 2. Optional: *Actions → Publish → Run workflow* uploads that build to
-   [TestPyPI](https://test.pypi.org/project/wp9529/); try it with
-   `pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ wp9529`.
+   [TestPyPI](https://test.pypi.org/project/wp9529-printer/); try it with
+   `pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ wp9529-printer`.
    TestPyPI refuses a version it already has, so bump again to re-test.
 3. Publish a GitHub release with the tag `v` + the version (e.g. `v0.1.1`).
    The workflow checks the tag matches, builds, smoke-tests the wheel and

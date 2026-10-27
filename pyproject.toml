@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wp9529"
+name = "wp9529-printer"
 version = "0.1.0"
 description = "Driver, label renderer and CLI for the VSON WP9529 Bluetooth LE label printer"
 readme = "README.md"
