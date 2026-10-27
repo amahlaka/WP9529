@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,11 +8,31 @@ version = "0.1.0"
 description = "Driver, label renderer and CLI for the VSON WP9529 Bluetooth LE label printer"
 readme = "README.md"
 requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE", "src/wp9529/assets/*LICENSE"]
+authors = [{ name = "Arttu Mahlakaarto" }]
+keywords = ["label printer", "bluetooth", "ble", "thermal printer", "qr code", "wp9529", "vson"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Printing",
+]
 dependencies = [
     "bleak>=0.22",
     "Pillow>=10.1.0",
     "qrcode>=7.4.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/amahlaka/WP9529"
+Issues = "https://github.com/amahlaka/WP9529/issues"
+Protocol = "https://github.com/amahlaka/WP9529/blob/main/PROTOCOL.md"
 
 [project.scripts]
 wp9529-label = "wp9529.cli:main"

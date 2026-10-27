@@ -22,14 +22,21 @@ this package and integration.
 ## Install
 
 ```bash
+pip install wp9529
+```
+
+This installs the `wp9529` package and the `wp9529-label` command. To work on the code
+instead, clone this repository and install it editable in a virtual
+environment:
+
+```bash
 python -m venv .venv
 ```
 ```bash
 .venv\Scripts\python -m pip install -e .
 ```
 
-On macOS/Linux use `.venv/bin/python` instead of `.venv\Scripts\python`. This
-installs the `wp9529` package and the `wp9529-label` command.
+On macOS/Linux use `.venv/bin/python` instead of `.venv\Scripts\python`.
 
 Turn the printer on and **close the phone app or disconnect it from the
 printer**, because the printer only accepts one connection at a time. It
@@ -261,6 +268,21 @@ debug logging*, print, and look for `PreferredBearer=le set` in the log. On a
 system where BlueZ refuses it, connect through an ESPHome Bluetooth proxy
 instead.
 
+### Releasing
+
+Releases go to [PyPI](https://pypi.org/project/wp9529/) through the
+[Publish workflow](.github/workflows/publish.yml), with trusted publishing (no
+API tokens):
+
+1. Bump `version` in `pyproject.toml` and push.
+2. Optional: *Actions → Publish → Run workflow* uploads that build to
+   [TestPyPI](https://test.pypi.org/project/wp9529/); try it with
+   `pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ wp9529`.
+   TestPyPI refuses a version it already has, so bump again to re-test.
+3. Publish a GitHub release with the tag `v` + the version (e.g. `v0.1.1`).
+   The workflow checks the tag matches, builds, smoke-tests the wheel and
+   uploads it to PyPI.
+
 ## Files
 
 | Path | What it is |
@@ -271,3 +293,5 @@ instead.
 | `tests/` | integration, renderer and CLI tests (Linux/WSL) |
 | `tools/scan.py`, `tools/probe.py` | debugging helpers for finding the printer and sending raw commands |
 | `PROTOCOL.md` | the reverse-engineered printer protocol |
+| `.github/workflows/publish.yml` | build and publish to PyPI / TestPyPI |
+| `LICENSE` | MIT; the bundled fonts keep their own licenses |
