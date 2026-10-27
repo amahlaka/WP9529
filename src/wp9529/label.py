@@ -1,7 +1,7 @@
 """Render labels as print-ready images for a 12 mm (96-dot) print head.
 
-Shared by the Home Assistant integration and the standalone CLI, so it must
-not import anything from Home Assistant.
+Part of the wp9529 package, and copied unchanged into the Home Assistant
+integration (HA-WP9529), so it must not import anything from Home Assistant.
 
 Layout, left to right along the label: [QR code] [MDI icon] [title / text].
 Every part is optional; with no text, the QR code and icon are centred.

@@ -1,8 +1,8 @@
 # WP9529 label printer
 
-Print labels on a VSON **WP9529** Bluetooth label printer without the phone
-app: from a PC with a Python package and command-line tool, or from Home
-Assistant with a custom integration.
+Print labels on a VSON **WP9529** Bluetooth label printer from a PC, without
+the phone app: a Python package (`pip install wp9529-printer`) and a
+command-line tool.
 
 Labels can mix a QR code (URL, Wi-Fi details, any text), a large title, smaller
 text and a [Material Design Icon](https://pictogrammers.com/library/mdi/).
@@ -10,8 +10,10 @@ text and a [Material Design Icon](https://pictogrammers.com/library/mdi/).
 The printer's Bluetooth protocol, reverse engineered from the iLabel app, is
 documented in [PROTOCOL.md](PROTOCOL.md).
 
-For Homebox asset tags, see the **Homebox-labeler** project, which builds on
-this package and integration.
+For Home Assistant, see [HA-WP9529](https://github.com/amahlaka/HA-WP9529), an
+integration built on this package's label renderer. For Homebox asset tags,
+see [Homebox-labeler](https://github.com/amahlaka/Homebox-labeler), which uses
+this package.
 
 ## Requirements
 
@@ -121,152 +123,26 @@ used for inventory tags.
 
 ## Home Assistant
 
-`custom_components/wp9529` is a Home Assistant integration for the printer:
-sensors, settings, a print form with live preview in the UI, a `notify` entity
-and the `wp9529.print_label` action for scripts and other integrations.
-
-The printer is reached through Home Assistant's own Bluetooth: an adapter on
-the Home Assistant machine, or an
-[ESPHome Bluetooth proxy](https://esphome.io/components/bluetooth_proxy.html)
-near the printer. Tested with Home Assistant 2026.10.
-
-### Install
-
-1. Copy `custom_components/wp9529` into `/config/custom_components/` on Home
-   Assistant (Samba, SSH or Studio Code Server add-on). Restart Home Assistant.
-2. Turn the printer on and close the phone app. Under *Settings → Devices &
-   services* a **VSON WP9529 Label Printer** appears as discovered: click
-   **Add**. If not, *Add integration* → search "WP9529".
-
-### Printer device
-
-| Entity | Kind | Purpose |
-|---|---|---|
-| Label title / Label text / Label QR code / Label icon | text | the print form; empty fields are left off the label. The icon is checked against the bundled MDI set (`mdi:` is added if you leave it out) |
-| Copies | number | copies for the Print button |
-| Label preview | image | live preview of the form |
-| Print label | button | prints the form |
-| Status | sensor | `idle` / `printing` / `error` (with a `last_error` attribute); unavailable while the printer is off or held by the phone app |
-| Labels printed, Last printed | sensor | counter and timestamp, kept across restarts |
-| Problem | binary sensor | paper/cover error, or the last job failed |
-| Charging | binary sensor | charging state, as of the last connection |
-| In range | binary sensor (diagnostic) | the printer is advertising and free to connect |
-| Firmware | sensor (diagnostic) | e.g. V50; also shown on the device |
-| Refresh status | button (diagnostic) | connect briefly to update firmware, charging and problem |
-| Label length, Label gap | number (config) | the loaded roll: 30 mm / 8.5 mm |
-| Print darkness | select (config) | light / normal / dark |
-| Auto power-off | number (config) | minutes of inactivity before the printer switches itself off (10–180). Stored on the printer: read on every connection, and changing it connects to write it |
-| Label | notify | `notify.send_message` prints title (large) and message |
-
-The printer is only connected while printing or refreshing, so it can sleep in
-between and the phone app keeps working. Firmware, charging and problem update
-whenever Home Assistant connects.
-
-### Action
-
-**`wp9529.print_label`**: the printer's public action, for scripts,
-automations and other integrations.
-
-| Field | Meaning |
-|---|---|
-| `device_id` | which printer; optional with only one |
-| `title` | large text |
-| `text` | smaller text, or the only text |
-| `qr` | any text to encode: URL, `WIFI:T:WPA;S:name;P:pass;;`, etc. |
-| `icon` | MDI icon, e.g. `mdi:tools` |
-| `copies` | 1–50 |
-| `density`, `label_length` | override the printer's settings for this job |
-
-Any mix works: QR only, icon only, text only, title + text + QR + icon, and so
-on. Empty values (`""`) count as not set, so scripts can pass optional fields
-straight through.
-
-```yaml
-action: wp9529.print_label
-data:
-  title: Guest Wi-Fi
-  qr: "WIFI:T:WPA;S:Home;P:secret;;"
-  icon: mdi:wifi
-```
-
-Plain text from anything that can send a notification:
-
-```yaml
-action: notify.send_message
-target:
-  entity_id: notify.wp9529_090c_label
-data:
-  title: Box 3
-  message: Winter clothes
-```
-
-### Examples
-
-Ready-made YAML is in [examples/homeassistant](examples/homeassistant). Entity
-IDs assume the printer is named "WP9529 090C":
-
-- [`scripts.yaml`](examples/homeassistant/scripts.yaml): `script.print_free_label`
-  with title, text, QR content, icon and copies
-- [`automations.yaml`](examples/homeassistant/automations.yaml): a guest Wi-Fi
-  label from a button helper or NFC tag, and a notification when the printer
-  reports a problem
-- [`dashboard-card.yaml`](examples/homeassistant/dashboard-card.yaml): a print
-  form with preview, the fields, status and a Print button
+The Home Assistant integration lives in its own repository,
+[HA-WP9529](https://github.com/amahlaka/HA-WP9529): sensors, settings, a print
+form with live preview, a `notify` entity and the `wp9529.print_label` action.
 
 ## Development
 
 The label renderer and its icon font live in `src/wp9529/label.py` and
-`src/wp9529/assets/`. The Home Assistant integration can't install this
-package, so it carries an identical copy in `custom_components/wp9529/`; after
-changing the renderer, copy it there too. A test fails if the two differ.
+`src/wp9529/assets/`. HA-WP9529 can't install this package inside Home
+Assistant, so it carries an identical copy; after changing the renderer, copy
+it there too. HA-WP9529's tests fail if the copies differ while both projects
+sit side by side.
 
-The tests cover the integration (config flow, every entity, the action,
-`notify`, preview, errors), the BlueZ workaround, the renderer and the CLI.
-They need Linux (or WSL) with Python 3.14:
+The tests cover the renderer and the CLI:
 
 ```bash
-pip install -e . pytest-homeassistant-custom-component
+pip install -e . pytest
 ```
 ```bash
 pytest
 ```
-
-Home Assistant's Bluetooth component also needs its own requirements: install
-those listed in the `manifest.json` of the `bluetooth`, `bluetooth_adapters`,
-`usb` and `hassio` components.
-
-## Troubleshooting
-
-**"No WP9529 found"**: the printer is off, asleep, or connected to the phone
-app. Turn it on, close the app and try again.
-
-**Labels are shifted or run into the gap**: the printer has lost its place on
-the roll. Use the printer's own re-align (feed) button, then print again. This
-can happen after a job that is longer than the label. Don't change `--length`
-or `--gap` to compensate.
-
-**Text is upside down**: add `--rotate 270`.
-
-**Print is too faint or too dark**: use `--density dark` or `--density light`.
-
-**"unknown MDI icon"**: check the name at
-[pictogrammers.com](https://pictogrammers.com/library/mdi/). The bundled font
-is version 7.4.47, so icons added after it aren't available.
-
-**Home Assistant: "… is not reachable" / Status unavailable**: the printer is
-off, the phone app is connected to it, or no Bluetooth adapter or proxy is in
-range. Check *Settings → Devices & services → Bluetooth* to see whether Home
-Assistant sees `9529#…` advertisements.
-
-**Home Assistant: "BREDR.ProfileUnavailable" / "classic Bluetooth instead of
-Bluetooth LE"**: the printer's advertisements say it also supports classic
-Bluetooth, so BlueZ on the Home Assistant host tries classic first, where the
-printer offers nothing. The integration sets BlueZ's `PreferredBearer` to `le`
-before each connection. That needs BlueZ with experimental features, which Home
-Assistant OS has. To check it worked, open the integration and choose *Enable
-debug logging*, print, and look for `PreferredBearer=le set` in the log. On a
-system where BlueZ refuses it, connect through an ESPHome Bluetooth proxy
-instead.
 
 ### Releasing
 
@@ -283,14 +159,30 @@ API tokens):
    The workflow checks the tag matches, builds, smoke-tests the wheel and
    uploads it to PyPI.
 
+## Troubleshooting
+
+**"No WP9529 found"**: the printer is off, asleep, or connected to the phone
+app (or Home Assistant). Turn it on, close the app and try again.
+
+**Labels are shifted or run into the gap**: the printer has lost its place on
+the roll. Use the printer's own re-align (feed) button, then print again. This
+can happen after a job that is longer than the label. Don't change `--length`
+or `--gap` to compensate.
+
+**Text is upside down**: add `--rotate 270`.
+
+**Print is too faint or too dark**: use `--density dark` or `--density light`.
+
+**"unknown MDI icon"**: check the name at
+[pictogrammers.com](https://pictogrammers.com/library/mdi/). The bundled font
+is version 7.4.47, so icons added after it aren't available.
+
 ## Files
 
 | Path | What it is |
 |---|---|
 | `src/wp9529/` | the Python package: `driver.py` (Bluetooth LE, `bleak`), `label.py` (renderer), `cli.py` (`wp9529-label`), `assets/` (MDI icon font 7.4.47, codepoints, license) |
-| `custom_components/wp9529/` | the Home Assistant integration, with a copy of the renderer and assets |
-| `examples/homeassistant/` | example script, automations and dashboard card |
-| `tests/` | integration, renderer and CLI tests (Linux/WSL) |
+| `tests/` | renderer and CLI tests |
 | `tools/scan.py`, `tools/probe.py` | debugging helpers for finding the printer and sending raw commands |
 | `PROTOCOL.md` | the reverse-engineered printer protocol |
 | `.github/workflows/publish.yml` | build and publish to PyPI / TestPyPI |
