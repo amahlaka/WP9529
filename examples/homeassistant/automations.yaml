@@ -1,0 +1,34 @@
+# Example automations. Entity IDs assume the printer is named "WP9529 090C";
+# adjust them to yours.
+
+# Print a guest Wi-Fi label from a dashboard button or NFC tag.
+# Needs a button helper: Settings > Devices & services > Helpers > Create
+# helper > Button, named "Print Wi-Fi label" (input_button.print_wifi_label).
+- alias: Print guest Wi-Fi label
+  id: wp9529_print_wifi_label
+  triggers:
+    - trigger: state
+      entity_id: input_button.print_wifi_label
+  actions:
+    - action: wp9529.print_label
+      data:
+        title: Guest Wi-Fi
+        qr: "WIFI:T:WPA;S:Home-Guest;P:change-me;;"
+        icon: mdi:wifi
+
+# Tell someone when the printer reports a problem (paper out, cover open,
+# Bluetooth failure).
+- alias: Label printer problem
+  id: wp9529_problem_notification
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.wp9529_090c_problem
+      to: "on"
+  actions:
+    - action: persistent_notification.create
+      data:
+        title: Label printer
+        message: >-
+          The label printer has a problem:
+          {{ state_attr('sensor.wp9529_090c_status', 'last_error') or 'check paper and cover' }}
+

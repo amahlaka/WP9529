@@ -1,0 +1,34 @@
+# Dashboard cards (Edit dashboard > Add card > Manual). Entity IDs assume the
+# printer is named "WP9529 090C".
+
+# Label printer: fill in any of title / text / QR / icon, check the preview,
+# press Print. Empty fields are left off the label.
+type: vertical-stack
+cards:
+  - type: picture-entity
+    entity: image.wp9529_090c_label_preview
+    show_name: false
+    show_state: false
+  - type: entities
+    title: Label printer
+    entities:
+      - entity: text.wp9529_090c_label_title
+        name: Title
+      - entity: text.wp9529_090c_label_text
+        name: Text
+      - entity: text.wp9529_090c_label_qr_code
+        name: QR code
+      - entity: text.wp9529_090c_label_icon
+        name: Icon (mdi:…)
+      - entity: number.wp9529_090c_copies
+      - entity: sensor.wp9529_090c_status
+  - type: button
+    entity: button.wp9529_090c_print_label
+    name: Print
+    icon: mdi:printer
+    tap_action:
+      action: perform-action
+      perform_action: button.press
+      target:
+        entity_id: button.wp9529_090c_print_label
+

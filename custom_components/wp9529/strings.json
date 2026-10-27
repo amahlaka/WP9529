@@ -1,0 +1,157 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "description": "Choose the printer. Make sure it is on and not connected to the phone app.",
+        "data": {
+          "address": "Printer"
+        }
+      },
+      "bluetooth_confirm": {
+        "description": "Set up the label printer {name}?"
+      }
+    },
+    "abort": {
+      "already_configured": "This printer is already set up.",
+      "no_devices_found": "No WP9529 printer found. Turn it on, close the phone app, and make sure Home Assistant's Bluetooth (or a Bluetooth proxy) is in range."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "in_range": {
+        "name": "In range"
+      },
+      "problem": {
+        "name": "Problem"
+      },
+      "charging": {
+        "name": "Charging"
+      }
+    },
+    "button": {
+      "print": {
+        "name": "Print label"
+      },
+      "refresh": {
+        "name": "Refresh status"
+      }
+    },
+    "image": {
+      "preview": {
+        "name": "Label preview"
+      }
+    },
+    "notify": {
+      "label": {
+        "name": "Label"
+      }
+    },
+    "number": {
+      "copies": {
+        "name": "Copies"
+      },
+      "label_length": {
+        "name": "Label length"
+      },
+      "label_gap": {
+        "name": "Label gap"
+      },
+      "power_off": {
+        "name": "Auto power-off"
+      }
+    },
+    "select": {
+      "density": {
+        "name": "Print darkness",
+        "state": {
+          "light": "Light",
+          "normal": "Normal",
+          "dark": "Dark"
+        }
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "idle": "Idle",
+          "printing": "Printing",
+          "error": "Error"
+        }
+      },
+      "labels_printed": {
+        "name": "Labels printed"
+      },
+      "last_printed": {
+        "name": "Last printed"
+      },
+      "firmware": {
+        "name": "Firmware"
+      }
+    },
+    "text": {
+      "form_title": {
+        "name": "Label title"
+      },
+      "form_text": {
+        "name": "Label text"
+      },
+      "form_qr": {
+        "name": "Label QR code"
+      },
+      "form_icon": {
+        "name": "Label icon"
+      }
+    }
+  },
+  "selector": {
+    "density": {
+      "options": {
+        "light": "Light",
+        "normal": "Normal",
+        "dark": "Dark"
+      }
+    }
+  },
+  "services": {
+    "print_label": {
+      "name": "Print label",
+      "description": "Prints a label with any combination of title, text, QR code and MDI icon. Leave a field empty to leave it off.",
+      "fields": {
+        "device_id": {
+          "name": "Printer",
+          "description": "Which printer; optional when only one is set up."
+        },
+        "title": {
+          "name": "Title",
+          "description": "Large text."
+        },
+        "text": {
+          "name": "Text",
+          "description": "Smaller text below the title, or the only text."
+        },
+        "qr": {
+          "name": "QR code",
+          "description": "Any text to encode as a QR code: a URL, Wi-Fi details, etc."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "MDI icon, for example mdi:tools."
+        },
+        "copies": {
+          "name": "Copies",
+          "description": "Number of labels to print."
+        },
+        "density": {
+          "name": "Darkness",
+          "description": "Overrides the printer's Print darkness setting."
+        },
+        "label_length": {
+          "name": "Label length",
+          "description": "Overrides the printer's Label length setting."
+        }
+      }
+    }
+  }
+}

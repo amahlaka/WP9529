@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wp9529"
+version = "0.1.0"
+description = "Driver, label renderer and CLI for the VSON WP9529 Bluetooth LE label printer"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bleak>=0.22",
+    "Pillow>=10.1.0",
+    "qrcode>=7.4.2",
+]
+
+[project.scripts]
+wp9529-label = "wp9529.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+wp9529 = ["assets/*"]

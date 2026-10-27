@@ -1,0 +1,41 @@
+# Paste into scripts.yaml (or create each one in Settings > Automations & scenes >
+# Scripts > Add script > Edit in YAML, without the top-level key).
+
+print_free_label:
+  alias: Print free label
+  icon: mdi:label-outline
+  description: Print a label with any title, text, QR code and icon on the WP9529.
+  fields:
+    title:
+      name: Title
+      selector:
+        text:
+    text:
+      name: Text
+      selector:
+        text:
+    qr:
+      name: QR code content
+      description: URL, Wi-Fi string (WIFI:T:WPA;S:name;P:password;;) or any text
+      selector:
+        text:
+    icon:
+      name: Icon
+      selector:
+        icon:
+    copies:
+      name: Copies
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 10
+  sequence:
+    - action: wp9529.print_label
+      data:
+        title: "{{ title | default('') }}"
+        text: "{{ text | default('') }}"
+        qr: "{{ qr | default('') }}"
+        icon: "{{ icon | default('') }}"
+        copies: "{{ copies | default(1) }}"
+
